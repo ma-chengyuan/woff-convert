@@ -19,6 +19,14 @@ extern "C" {
         data: *const u8,
         length: usize,
     ) -> bool;
+
+    fn woff2_ConvertWOFF2ToTTFString(
+        data: *const u8,
+        length: usize,
+        result_length: *mut usize,
+    ) -> *mut u8;
+
+    fn woff2_ConvertWOFF2ToTTFStringFinalize(result: *mut u8, result_length: usize, s: *mut u8);
 }
 
 #[derive(Debug, Clone, Copy)]
@@ -64,7 +72,25 @@ pub fn convert_woff2_to_ttf(data: &[u8]) -> Result<Vec<u8>, Woff2Error> {
             data.len(),
         );
         if !success {
-            return Err(Woff2Error);
+            // The approach above infers final size of the decompressed TTF font
+            // by inspecting the WOFF2 header. This may not be accurate in all
+            // cases. The approach below is more error-tolerant, as it allows
+            // the decompressor to allocate memory as needed.
+            // See https://github.com/fontforge/fontforge/issues/5101 for
+            // context, and https://github.com/fontforge/fontforge/pull/5160 for
+            // the fix.
+            let mut result_length = 0usize;
+            let result_string =
+                woff2_ConvertWOFF2ToTTFString(data.as_ptr(), data.len(), &mut result_length);
+            if result_string.is_null() {
+                return Err(Woff2Error);
+            }
+            result.resize(result_length, 0);
+            woff2_ConvertWOFF2ToTTFStringFinalize(
+                result.as_mut_ptr(),
+                result_length,
+                result_string,
+            );
         }
         Ok(result)
     }

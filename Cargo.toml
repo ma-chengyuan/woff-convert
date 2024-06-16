@@ -1,7 +1,7 @@
 [package]
 name = "woff-convert"
 description = "Convert WOFF2 to and from TTF"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 
 [lib]

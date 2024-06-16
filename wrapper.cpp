@@ -4,6 +4,8 @@
 #include "woff2/encode.h"
 #include "woff2/output.h"
 
+#include <string>
+
 extern "C" {
 size_t woff2_MaxWOFF2CompressedSize(const uint8_t *data, size_t length) {
     return woff2::MaxWOFF2CompressedSize(data, length);
@@ -32,6 +34,28 @@ size_t woff2_ComputeWOFF2FinalSize(const uint8_t *data, size_t length) {
 bool woff2_ConvertWOFF2ToTTF(uint8_t *result, size_t result_length,
                              const uint8_t *data, size_t length) {
     return woff2::ConvertWOFF2ToTTF(result, result_length, data, length);
+}
+
+std::string *woff2_ConvertWOFF2ToTTFString(const uint8_t *data, size_t length,
+                                           size_t *result_length) {
+    const auto initial_size = std::min(
+        woff2::ComputeWOFF2FinalSize(data, length), woff2::kDefaultMaxSize);
+    const auto s = new std::string(initial_size, '\0');
+    woff2::WOFF2StringOut output{s};
+    const auto success = woff2::ConvertWOFF2ToTTF(data, length, &output);
+    if (!success) {
+        delete s;
+        return nullptr;
+    }
+    *result_length = output.Size();
+    return s;
+}
+
+void woff2_ConvertWOFF2ToTTFStringFinalize(uint8_t *result,
+                                           size_t result_length,
+                                           std::string *s) {
+    std::memcpy(result, s->data(), result_length);
+    delete s;
 }
 }
 
