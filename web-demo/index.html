@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>woff-convert demo</title>
+  </head>
+  <body>
+    <div class="mx-auto flex max-w-2xl flex-col space-y-4">
+      <h1 class="mt-4 text-2xl">woff-convert test</h1>
+      <div class="flex flex-row items-center space-x-2">
+        <label class="grow" for="brotli-level">Brotli level:</label>
+        <input
+          class="w-20 rounded-md border-2 p-2"
+          type="number"
+          min="0"
+          max="11"
+          value="11"
+          id="brotli-level"
+        />
+      </div>
+      <div class="flex flex-row items-center space-x-2">
+        <label class="grow" for="auto-download">Download results:</label>
+        <input
+          class="flex rounded-md border-2 p-2"
+          type="checkbox"
+          id="auto-download"
+          checked
+        />
+      </div>
+      <button
+        class="h-10 w-full rounded-md bg-emerald-200 hover:bg-emerald-300"
+        id="ttf-to-woff"
+      >
+        TTF to WOFF2
+      </button>
+      <button
+        class="h-10 w-full rounded-md bg-rose-200 hover:bg-rose-300"
+        id="woff-to-ttf"
+      >
+        WOFF2 to TTF
+      </button>
+      <div class="w-full" id="convert-results"></div>
+    </div>
+    <script type="module" src="/src/main.ts"></script>
+  </body>
+</html>
